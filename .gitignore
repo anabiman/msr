@@ -1,0 +1,3 @@
+*.a
+*.o
+makefile_BR2
