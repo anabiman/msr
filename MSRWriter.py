@@ -5,16 +5,15 @@ import os
 from numpy.linalg import norm, solve
 import proto_md.subsystems.spacewarping_subsystem as SS
 
-def readCoords(fname, natoms):
+""" This is a simple script that uses MSR + protoMD to guide a trajectory of micro (all-atom) states
+to new configuration that satisfy coarse-grained (CG) and fine-grained (FG) constraints """
 
+def readCoords(fname, natoms):
         try:
                 with open(fname) as f:
 
                         lines = (line for line in f if line[1].isdigit())
                         r = np.loadtxt(lines)
-
-			print r.shape
-
                         pos = np.reshape(r, (3, natoms)).T
 
                 return pos
