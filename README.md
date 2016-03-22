@@ -13,9 +13,13 @@ Department of Chemistry, Indiana University, Bloomington
 PREREQUISITES
 =============
 ProtoMD - https://github.com/CTCNano/proto_md
+
 PETSc - https://www.mcs.anl.gov/petsc
+
 MDAnalysis - https://code.google.com/p/mdanalysis
+
 Numpy - http://www.numpy.org
+
 OpenMPI - http://www.open-mpi.org or MPICH  - https://www.mpich.org
 
 WORKING EXAMPLE
