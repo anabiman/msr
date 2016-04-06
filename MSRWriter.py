@@ -4,6 +4,7 @@ import MDAnalysis as md
 import os
 from numpy.linalg import norm, solve
 import proto_md.subsystems.spacewarping_subsystem as SS
+import time
 
 """ This is a simple script that uses MSR + protoMD to guide a trajectory of micro (all-atom) states
 to new configuration that satisfy coarse-grained (CG) and fine-grained (FG) constraints """
@@ -24,8 +25,9 @@ def readCoords(fname, natoms):
 
 if __name__ == '__main__':
 	# read user input
-        _, gro, traj, tpr, tol = sys.argv
+        _, gro, traj, tpr, tol, procs = sys.argv
 	tol = np.float(tol)
+	procs = np.int(procs)
 
         U = md.Universe(gro, traj)
 
@@ -82,8 +84,14 @@ if __name__ == '__main__':
 		print 'mpirun -n 1 MSR.a -nc {} -ns {} -c {} -i Indices.dat -l LengthEq.dat -cg {} -ncg {} -ref {} -refTrans {} -o {} -tol {} -PC_type jacobi'.format(natoms, \
                         ncons, cFname, cgFname, nCG, basis, invOpFname, fname, tol)
 
-                os.system('mpirun -n 1 MSR.a -nc {} -ns {} -c {} -i Indices.dat -l LengthEq.dat -cg {} -ncg {} -ref {} -refTrans {} -o {} -tol {} -PC_type jacobi'.format(natoms, \
-			ncons, cFname, cgFname, nCG, basis, invOpFname, fname, tol))
+		tic = time.clock()
+
+                os.system('mpirun -n {} MSR.a -nc {} -ns {} -c {} -i Indices.dat -l LengthEq.dat -cg {} -ncg {} -ref {} -refTrans {} -o {} -tol {} -PC_type jacobi'.format( \
+			procs, natoms, ncons, cFname, cgFname, nCG, basis, invOpFname, fname, tol))
+
+		toc = time.clock()
+
+		print 'Time = {}'.format(toc - tic)
 
                 pos = readCoords(fname, natoms)
                 U.atoms.set_positions(pos)

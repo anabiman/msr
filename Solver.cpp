@@ -1,6 +1,10 @@
 #include "Newton.h"
 using namespace std;
 
+/* This code does not run correctly in parallel. 
+TODO: Find the bug in parallel mode.
+*/
+
 #undef __FUNCT__
 #define __FUNCT__ "ComputeMetric"
 PetscErrorCode ComputeMetric(std::vector<Vec> Coords, Mat& Adj, Vec& EqLength, Vec& Constraints) {
@@ -428,13 +432,13 @@ PetscErrorCode NewtonIter(std::vector<Vec>& Coords, std::vector<Vec>& Phi, Petsc
 						ierr = KSPSetType(ksp, KSPIBCGS); CHKERRQ(ierr);
 
 						ierr = MatMultTranspose(Ref, Coords[dim], CGCons); CHKERRQ(ierr);
+
 						ierr = VecAXPBY(CGCons, 1.0, -1.0, Phi[dim]); CHKERRQ(ierr);
 
 						ierr = KSPSetOperators(ksp, RefTransRef, RefTransRef); CHKERRQ(ierr);
 						ierr = KSPSetType(ksp, KSPIBCGS); CHKERRQ(ierr);
 						ierr = KSPSolve(ksp, CGCons, lambda); CHKERRQ(ierr);
 						ierr = KSPDestroy(&ksp); CHKERRQ(ierr);
-
 
 						// Update r = ru + dr where dr = U * lambda
 						ierr = MatMult(Ref, lambda, dr); CHKERRQ(ierr);
@@ -479,6 +483,9 @@ PetscErrorCode NewtonIter(std::vector<Vec>& Coords, std::vector<Vec>& Phi, Petsc
 
 				MatDestroy(&LagJacobi);
 				iter++;
+
+				if(iter >10)
+					break;
 	 		}
 		}
 		catch(const std::exception& e) {
