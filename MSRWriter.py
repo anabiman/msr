@@ -80,10 +80,6 @@ if __name__ == '__main__':
                 nCG = len(CG)
 
                 np.savetxt(cgFname, CG)
-
-		print 'mpirun -n 1 MSR.a -nc {} -ns {} -c {} -i Indices.dat -l LengthEq.dat -cg {} -ncg {} -ref {} -refTrans {} -o {} -tol {} -PC_type jacobi'.format(natoms, \
-                        ncons, cFname, cgFname, nCG, basis, invOpFname, fname, tol)
-
 		tic = time.clock()
 
                 os.system('mpirun -n {} MSR.a -nc {} -ns {} -c {} -i Indices.dat -l LengthEq.dat -cg {} -ncg {} -ref {} -refTrans {} -o {} -tol {} -PC_type jacobi'.format( \
