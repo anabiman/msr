@@ -4,16 +4,15 @@ import MDAnalysis as md
 import os
 from numpy.linalg import norm, solve
 import proto_md.subsystems.spacewarping_subsystem as SS
-import time
 
 """ This is a simple script that uses MSR + protoMD to guide a trajectory of micro (all-atom) states
-to new configuration that satisfy coarse-grained (CG) and fine-grained (FG) constraints """
+to new configurations consistent with the imposed coarse-grained (CG) and fine-grained (FG) constraints """
 
 def readCoords(fname, natoms):
         try:
                 with open(fname) as f:
 
-                        lines = (line for line in f if line[1].isdigit())
+                        lines = (line for line in f if not line.strip()[:3].isalpha())
                         r = np.loadtxt(lines)
                         pos = np.reshape(r, (3, natoms)).T
 
@@ -25,9 +24,8 @@ def readCoords(fname, natoms):
 
 if __name__ == '__main__':
 	# read user input
-        _, gro, traj, tpr, tol, procs = sys.argv
+        _, gro, traj, tpr, tol = sys.argv
 	tol = np.float(tol)
-	procs = np.int(procs)
 
         U = md.Universe(gro, traj)
 
@@ -80,20 +78,27 @@ if __name__ == '__main__':
                 nCG = len(CG)
 
                 np.savetxt(cgFname, CG)
-		tic = time.clock()
 
-                os.system('mpirun -n {} MSR.a -nc {} -ns {} -c {} -i Indices.dat -l LengthEq.dat -cg {} -ncg {} -ref {} -refTrans {} -o {} -tol {} -PC_type jacobi'.format( \
-			procs, natoms, ncons, cFname, cgFname, nCG, basis, invOpFname, fname, tol))
+		print 'mpirun -n 1 MSR.a -nc {} -ns {} -c {} -i Indices.dat -l LengthEq.dat -cg {} -ncg {} -ref {} -refTrans {} -o {} -tol {} -PC_type jacobi'.format(natoms, \
+                        ncons, cFname, cgFname, nCG, basis, invOpFname, fname, tol)
 
-		toc = time.clock()
-
-		print 'Time = {}'.format(toc - tic)
+                os.system('mpirun -n 1 MSR.a -nc {} -ns {} -c {} -i Indices.dat -l LengthEq.dat -cg {} -ncg {} -ref {} -refTrans {} -o {} -tol {} -PC_type jacobi'.format(natoms, \
+			ncons, cFname, cgFname, nCG, basis, invOpFname, fname, tol))
 
                 pos = readCoords(fname, natoms)
                 U.atoms.set_positions(pos)
 
                 W.write(ts)
 
+		# clean up
+		os.system('rm {}'.format(cgFname))
+		os.system('rm {}'.format(cFname))
                 os.system('rm {}'.format(fname))
 
         W.close()
+
+	# input clean up
+	os.system('rm {}'.format(invOpFname))
+	os.system('rm {}'.format(basis))
+	os.system('rm Indices.dat')
+	os.system('rm LengthEq.dat')
