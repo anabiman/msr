@@ -138,16 +138,16 @@ PetscBool readInput(char* coordFname, char* phiFname, char* indicesFname, char* 
     PetscFunctionBegin;
     PetscBool flg;
 
-    PetscOptionsGetString(PETSC_NULL, "-c", coordFname, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, "-cg", phiFname, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, "-i", indicesFname, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, "-l", eqLengthFname, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, "-ref", refFname, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, "-refTrans", refTrans, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, "-o", oFname, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetInt(PETSC_NULL, "-nc", &numCoords, &flg);
-    PetscOptionsGetInt(PETSC_NULL, "-ns", &numCons, &flg);
-    PetscOptionsGetInt(PETSC_NULL, "-ncg", &numCG, &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-c", coordFname, PETSC_MAX_PATH_LEN, &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-cg", phiFname, PETSC_MAX_PATH_LEN, &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-i", indicesFname, PETSC_MAX_PATH_LEN, &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-l", eqLengthFname, PETSC_MAX_PATH_LEN, &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-ref", refFname, PETSC_MAX_PATH_LEN, &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-refTrans", refTrans, PETSC_MAX_PATH_LEN, &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-o", oFname, PETSC_MAX_PATH_LEN, &flg);
+    PetscOptionsGetInt(PETSC_NULL, PETSC_NULL, "-nc", &numCoords, &flg);
+    PetscOptionsGetInt(PETSC_NULL, PETSC_NULL, "-ns", &numCons, &flg);
+    PetscOptionsGetInt(PETSC_NULL, PETSC_NULL, "-ncg", &numCG, &flg);
 
     PetscFunctionReturn(flg);
 }
@@ -197,7 +197,7 @@ int main(int argc, char** argv) {
        refTrans[PETSC_MAX_PATH_LEN];
 
   PetscBool flg = readInput(coordFname, phiFname, indicesFname, eqLengthFname, refFname, refTrans, oFname, numCoords, numCons, numCG);
-  PetscOptionsGetReal(PETSC_NULL, "-tol", &tol, &flg);
+  PetscOptionsGetReal(PETSC_NULL, PETSC_NULL, "-tol", &tol, &flg);
 
   // mpi params
   PetscInt numProcs, rank;
