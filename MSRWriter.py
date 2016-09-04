@@ -79,9 +79,6 @@ if __name__ == '__main__':
 
                 np.savetxt(cgFname, CG)
 
-		print 'mpirun -n 1 MSR.a -nc {} -ns {} -c {} -i Indices.dat -l LengthEq.dat -cg {} -ncg {} -ref {} -refTrans {} -o {} -tol {} -PC_type jacobi'.format(natoms, \
-                        ncons, cFname, cgFname, nCG, basis, invOpFname, fname, tol)
-
                 os.system('mpirun -n 1 MSR.a -nc {} -ns {} -c {} -i Indices.dat -l LengthEq.dat -cg {} -ncg {} -ref {} -refTrans {} -o {} -tol {} -PC_type jacobi'.format(natoms, \
 			ncons, cFname, cgFname, nCG, basis, invOpFname, fname, tol))
 
@@ -94,6 +91,9 @@ if __name__ == '__main__':
 		os.system('rm {}'.format(cgFname))
 		os.system('rm {}'.format(cFname))
                 os.system('rm {}'.format(fname))
+
+		if ts.frame > 100:
+			break
 
         W.close()
 

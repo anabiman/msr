@@ -22,10 +22,6 @@
 #include "Newton.h"
 using namespace std;
 
-/* This code does not run correctly in parallel. 
-TODO: Find the bug in parallel mode.
-*/
-
 #undef __FUNCT__
 #define __FUNCT__ "ComputeMetric"
 PetscErrorCode ComputeMetric(std::vector<Vec> Coords, Mat& Adj, Vec& EqLength, Vec& Constraints) {
@@ -43,7 +39,7 @@ PetscErrorCode ComputeMetric(std::vector<Vec> Coords, Mat& Adj, Vec& EqLength, V
      Indiana University, Bloomington
 
      ** Last update **
-     May 11, 2013 - 23:15
+     Sep 4, 2016 - 15:41
   */
 	PetscFunctionBegin;
 
@@ -219,51 +215,38 @@ PetscErrorCode ComputeAdjacencyMatrix(PetscInt* indicesOne, PetscInt* indicesTwo
 
 #undef __FUNCT__
 #define __FUNCT__ "AssembleLagJacobi"
-PetscErrorCode AssembleLagJacobi(std::vector<Vec> Coords, Mat& Adjacency, Mat& AdjacencyTrans, std::vector<Mat*> AtomicJacobi, Mat& LagJacobiGlobal) {
+PetscErrorCode AssembleLagJacobi(std::vector<Mat*> AtomicJacobi, Mat& LagJacobiGlobal) {
        PetscFunctionBegin;
 
        PetscErrorCode ierr;
-       PetscInt Dims, numAtoms, NumCons, istart, iend;
-       MatGetSize(AdjacencyTrans, &numAtoms, &NumCons);
+       PetscInt Dims, numAtoms, NumCons;
+       MatGetSize(*AtomicJacobi[0], &NumCons, &numAtoms);
 
-       VecGetSize(Coords[0], &numAtoms);
-       Dims = Coords.size();
+       Dims = AtomicJacobi.size();
 
-       MatGetOwnershipRange(Adjacency, &istart, &iend);
+	    Mat Tmp;
+	    ierr = MatCreate(PETSC_COMM_WORLD, &Tmp); CHKERRQ(ierr);
+	    ierr = MatSetSizes(Tmp, PETSC_DECIDE, PETSC_DECIDE, NumCons, NumCons); CHKERRQ(ierr);
+	    ierr = MatSetType(Tmp, MATMPIAIJ); CHKERRQ(ierr);
 
        for(auto dim = 0; dim < Dims; dim++) {
 
-	       // Compute Adj * Coords product
-	       Vec Ar;
-	       ierr = VecCreateMPI(PETSC_COMM_WORLD, PETSC_DECIDE, NumCons, &Ar); CHKERRQ(ierr);
-	       ierr = MatMult(Adjacency, Coords[dim], Ar); CHKERRQ(ierr);
-
-	       ierr = VecScale(Ar, 2.0);
-
-	       // Compute Jc * Adj.T product
-	       Mat AdjAtom;
-	       ierr = MatCreate(PETSC_COMM_WORLD, &AdjAtom); CHKERRQ(ierr);
-	       ierr = MatSetSizes(AdjAtom, PETSC_DECIDE, PETSC_DECIDE, NumCons, NumCons); CHKERRQ(ierr);
-	       ierr = MatSetType(AdjAtom, MATMPIAIJ); CHKERRQ(ierr);
-
-	       ierr = MatMatMult(*AtomicJacobi[dim], AdjacencyTrans, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &AdjAtom); CHKERRQ(ierr);
-
-	       ierr = MatDiagonalScale(AdjAtom, NULL, Ar); CHKERRQ(ierr);
+       	   ierr = MatMatMult(*AtomicJacobi[dim], *AtomicJacobi[dim], MAT_INITIAL_MATRIX, PETSC_DEFAULT, &Tmp); 
+       	   CHKERRQ(ierr);
 
 	       if(dim == 0) {
-		    		MatDuplicate(AdjAtom, MAT_COPY_VALUES, &LagJacobiGlobal);
+		    	MatDuplicate(Tmp, MAT_COPY_VALUES, &LagJacobiGlobal);
 	       		CHKERRQ(ierr);
 	       }
 
 	       else {
-	            ierr = MatAXPY(LagJacobiGlobal, 1.0, AdjAtom, SAME_NONZERO_PATTERN);
+	            ierr = MatAXPY(LagJacobiGlobal, 1.0, Tmp, SAME_NONZERO_PATTERN);
 	       	    CHKERRQ(ierr);
 	       }
-
-	       // Destroy allocated vectors & matrices
-	       VecDestroy(&Ar);
-	       MatDestroy(&AdjAtom);
 	   }
+
+		// Destroy allocated matrices
+	    MatDestroy(&Tmp);
 
        return ierr;
 }
@@ -374,12 +357,6 @@ PetscErrorCode NewtonIter(std::vector<Vec>& Coords, std::vector<Vec>& Phi, Petsc
 	//KSPSetTolerances(ksp,0.01,0.001,0.1,1000);
  	ierr = VecGetOwnershipRange(dr,&istart,&iend); CHKERRQ(ierr);
 
-	Mat AdjacencyTrans;
-	ierr = MatCreate(PETSC_COMM_WORLD, &AdjacencyTrans); CHKERRQ(ierr);
-	ierr = MatSetSizes(AdjacencyTrans, PETSC_DECIDE, PETSC_DECIDE, numAtoms, NumCons); CHKERRQ(ierr);
-	ierr = MatSetType(AdjacencyTrans, MATMPIAIJ); CHKERRQ(ierr);
-	ierr = MatTranspose(Adjacency, MAT_INITIAL_MATRIX, &AdjacencyTrans); CHKERRQ(ierr);
-
 	PetscScalar lagTmp;
 
 	// Track prev coords of a newton iter
@@ -410,8 +387,8 @@ PetscErrorCode NewtonIter(std::vector<Vec>& Coords, std::vector<Vec>& Phi, Petsc
 	 		ierr = ComputeAtomicJacobi(Coords, Adjacency, indicesOne, indicesTwo, AtomicJacobi); CHKERRQ(ierr);
 
 	 		Mat LagJacobi;
-			ierr = AssembleLagJacobi(Coords, Adjacency, AdjacencyTrans, AtomicJacobi, LagJacobi); CHKERRQ(ierr);
-			ierr = MatShift(LagJacobi, scaling); CHKERRQ(ierr);
+			ierr = AssembleLagJacobi(AtomicJacobi, LagJacobi); CHKERRQ(ierr);
+			ierr = MatShift(LagJacobi, -scaling); CHKERRQ(ierr);
 
 			// The nnz pattern does not change because the macromolecule topology does not change.
 
@@ -526,7 +503,6 @@ PetscErrorCode NewtonIter(std::vector<Vec>& Coords, std::vector<Vec>& Phi, Petsc
 			ierr = MatDestroy(AtomicJacobi[dim]); CHKERRQ(ierr);
 	}
 
-	ierr = MatDestroy(&AdjacencyTrans); CHKERRQ(ierr);
 	ierr = MatDestroy(&Adjacency); CHKERRQ(ierr);
 
  	ierr = VecDestroy(&Constraints); CHKERRQ(ierr);
