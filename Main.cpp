@@ -19,7 +19,7 @@
  *
  */
 
-#include "Newton.h"
+#include "Main.h"
 static char help[] = "Atomic Sparse Reconstruction\n";
 using namespace std;
 
@@ -138,13 +138,13 @@ PetscBool readInput(char* coordFname, char* phiFname, char* indicesFname, char* 
     PetscFunctionBegin;
     PetscBool flg;
 
-    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-c", coordFname, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-cg", phiFname, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-i", indicesFname, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-l", eqLengthFname, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-ref", refFname, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-refTrans", refTrans, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-o", oFname, PETSC_MAX_PATH_LEN, &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-c", coordFname, sizeof(coordFname), &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-cg", phiFname, sizeof(phiFname), &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-i", indicesFname, sizeof(indicesFname), &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-l", eqLengthFname, sizeof(eqLengthFname), &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-ref", refFname, sizeof(refFname), &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-refTrans", refTrans, sizeof(refTrans), &flg);
+    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "-o", oFname, sizeof(oFname), &flg);
     PetscOptionsGetInt(PETSC_NULL, PETSC_NULL, "-nc", &numCoords, &flg);
     PetscOptionsGetInt(PETSC_NULL, PETSC_NULL, "-ns", &numCons, &flg);
     PetscOptionsGetInt(PETSC_NULL, PETSC_NULL, "-ncg", &numCG, &flg);

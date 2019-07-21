@@ -19,7 +19,7 @@
  *
  */
 
-#include "Newton.h"
+#include "Main.h"
 using namespace std;
 
 #undef __FUNCT__
