@@ -19,16 +19,17 @@
  *
  */
 
-#ifndef NEWTON_H
-#define NEWTON_H
+#ifndef MAIN_H
+#define MAIN_H
 
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <petscksp.h>
 #include <petscmat.h>
+#include <petscksp.h>
 #include <vector>
 #include <algorithm>
+#include <petscvec.h>
 
 PetscErrorCode NewtonIter(std::vector<Vec>&, std::vector<Vec>&, PetscInt*, PetscInt*, Vec&, Mat&, Mat&, char*, PetscReal);
 PetscErrorCode writeVector(std::vector<Vec>& Coords, const char* fname);
