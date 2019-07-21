@@ -2,23 +2,22 @@ CC = mpiCC
 RM = rm
 EXEC = MSR.a
 LINKER = mpiCC
-CFlags = -c -g -std=c++0x
+CFlags = -c -g -std=c++11
 LFlags = -g
-INCL1 = ${HOME}/.local/usr/include
-INCL2 = ${HOME}/.local/include
-INCL3 = ${HOME}/.local/include
-LIB1 = ${HOME}/.local/lib
-LIB2 = ${HOME}/.local/usr/lib
-DEP  = petsc
+DEP  = petsc_real
+
+# Edit include + lib dirs below
+INCL = /usr/lib/petscdir/petsc3.10/x86_64-linux-gnu-real/include
+LIB = /usr/lib/petscdir/petsc3.10/x86_64-linux-gnu-real/lib
 
 install: Main.o Solver.o
-	${LINKER} ${LFlags} Main.o Solver.o -l${DEP} -L${LIB1} -L${LIB2} -o${EXEC}
+	${LINKER} ${LFlags} Main.o Solver.o -l${DEP} -L${LIB} -o${EXEC}
 
 Main.o: Main.cpp
-	${CC} ${CFlags} Main.cpp -I${INCL1} -I${INCL2} -I${INCL3}
+	${CC} ${CFlags} Main.cpp -I${INCL}
 
 Solver.o: Solver.cpp
-	${CC} ${CFlags} Solver.cpp -I${INCL1} -I${INCL2} -I${INCL3}
+	${CC} ${CFlags} Solver.cpp -I${INCL}
 
 clean: Main.o Solver.o
 	${RM} Main.o Solver.o ${EXEC}
