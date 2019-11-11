@@ -33,4 +33,6 @@
 PetscErrorCode NewtonIter(std::vector<Vec>&, std::vector<Vec>&, PetscInt*, PetscInt*, Vec&, Mat&, Mat&, char*, PetscReal);
 PetscErrorCode writeVector(std::vector<Vec>& Coords, const char* fname);
 
+#define MAX_ITERS 20
+
 #endif

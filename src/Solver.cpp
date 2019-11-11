@@ -505,7 +505,7 @@ PetscErrorCode NewtonIter(std::vector<Vec>& Coords, std::vector<Vec>& Phi, Petsc
 				MatDestroy(&LagJacobi);
 				iter++;
 
-				if(iter >10)
+				if(iter >MAX_ITERS)
 					break;
 	 		}
 		}

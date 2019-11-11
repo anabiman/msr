@@ -298,8 +298,6 @@ int main(int argc, char** argv) {
 	     ierr = VecAssemblyEnd(Phi[dim]); CHKERRQ(ierr);
     }
 
-   //VecView(Coords[0], PETSC_VIEWER_STDOUT_SELF);
-
       /**************************************/
      /****** Begin Computation ~ Phew! *****/
     /**************************************/
