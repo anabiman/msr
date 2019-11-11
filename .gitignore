@@ -1,3 +1,5 @@
 *.a
 *.o
 makefile_BR2
+__pycache__
+*.dcd
