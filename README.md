@@ -29,7 +29,7 @@ OpenMPI - http://www.open-mpi.org or MPICH  - https://www.mpich.org
 
 USAGE
 =====
-mpirun MSR.a -nc {int} -ns {int} -c {filename} -i {filename} -l {filename} -cg {filename} -ncg {int} -ref {filename} -inv {filename} -o {filename} -tol {float}
+`mpirun MSR.a -nc {int} -ns {int} -c {filename} -i {filename} -l {filename} -cg {filename} -ncg {int} -ref {filename} -inv {filename} -o {filename} -tol {float}`
 
 * nc: number of atoms
 * ns: number of constraints
@@ -44,7 +44,14 @@ mpirun MSR.a -nc {int} -ns {int} -c {filename} -i {filename} -l {filename} -cg {
 
 WORKING EXAMPLE
 ===============
-python swm_example.py top tol
+A sample script (swm_example.py) is provided in the examples directory. This script has the following signature:
+
+`python swm_example.py top tol`
 
 * top: topology file such as a pdb or gro file
 * tol: tolerance set for the atomic displacement, below which convergence is assumed to be achieved
+
+This script uses the space-warping method to coarse-grained an all-atom system perturbed by noise. MSR recovers a reasonable microstate in 20 iterations.
+To run this script, invoke:
+
+`swm_example.py ../data/systems/dialanine.pdb 1e-3`
