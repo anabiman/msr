@@ -10,15 +10,10 @@ Microstate sparse reconstruction (MSR) is an optimization algorithm that solves 
 AUTHOR
 ======
 Andrew Abi-Mansour
-
-INSTITUTION
-===========
 Department of Chemistry, Indiana University, Bloomington
 
 PREREQUISITES
 =============
-ProtoMD - https://github.com/CTCNano/proto_md
-
 PETSc - https://www.mcs.anl.gov/petsc
 
 MDAnalysis - https://code.google.com/p/mdanalysis
@@ -55,3 +50,7 @@ This script uses the space-warping method to coarse-grained an all-atom system p
 To run this script, invoke:
 
 `swm_example.py ../data/systems/dialanine.pdb 1e-3`
+
+FEEDBACK
+========
+Email me: andrew [at] gmail [dot] com
