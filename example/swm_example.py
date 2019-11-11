@@ -1,5 +1,5 @@
 import sys
-import numpy as np
+import numpy
 import MDAnalysis as md
 import os
 from numpy.linalg import norm, solve
@@ -18,91 +18,114 @@ def readCoords(fname, natoms):
                 with open(fname) as f:
 
                         lines = (line for line in f if not line.strip()[:3].isalpha())
-                        r = np.loadtxt(lines)
-                        pos = np.reshape(r, (3, natoms)).T
+                        r = numpy.loadtxt(lines)
+                        pos = numpy.reshape(r, (3, natoms)).T
 
                 return pos
 
         except Exception:
                 raise
 
+def perturb(atoms: md.AtomGroup, noise) -> numpy.ndarray:
+        """ Adds noise to the system whilep reserving system COM """
+        com = atoms.center_of_mass()
+        atoms.positions += (1.0 - 2.0 * numpy.random.random_sample(atoms.positions.shape)) * noise
+
+        return atoms.positions - atoms.center_of_mass() + com
+
+def write(writer, atoms: md.AtomGroup):
+        writer.write(atoms)
+
 if __name__ == '__main__':
 	# read user input
         _, pdb, tol = sys.argv
-        tol = np.float(tol)
+        tol = numpy.float(tol)
+        clean = True
 
+        # Unperturbed structure
         U = md.Universe(pdb, guess_bonds=True)
 
         args = {'kmax':2}
-        n, ss = SS.SpaceWarpingSubsystemFactory(U, ['protein'], **args)
+        n, ss = SS.SpaceWarpingSubsystemFactory(U, **args)
+
         s = ss[0]
         s.universe_changed(U)
         s.equilibrated()
 
-        bonds = np.array(U.bonds.to_indices())
-        angles = np.array(U.angles.to_indices())
-        angles = np.array([angles[:,0], angles[:,2]]).T
+        bonds = numpy.array(U.bonds.to_indices())
+        angles = numpy.array(U.angles.to_indices())
+        angles = numpy.array([angles[:,0], angles[:,2]]).T
 
-        indices = np.concatenate((bonds, angles), axis=0)
+        indices = numpy.concatenate((bonds, angles), axis=0)
         indices.sort()
 
         ncons = len(indices)
 
         leq2 = norm(U.atoms.positions[indices[:,0]] - U.atoms.positions[indices[:,1]], axis=1)**2.0
 
-        np.savetxt('Indices.dat', indices, fmt='%d')
-        np.savetxt('LengthEq.dat', leq2)
+        numpy.savetxt('Indices.dat', indices, fmt='%d')
+        numpy.savetxt('LengthEq.dat', leq2)
 
         natoms = U.atoms.n_atoms
         nframes = U.trajectory.n_frames
-        fname = 'output_coords_rec.dat'
+        ocFname = 'output_coords_rec.dat'
         cgFname = 'CG.dat'
         basis = 'basis.dat'
-        cFname = 'input_coords_ref.dat'
+        icFname = 'input_coords_ref.dat'
         invOpFname = 'invOP.dat'
 
         W = md.Writer('diAlanine.dcd', n_atoms=natoms)
 
         Utw = s.basis.T * s.atoms.masses
-        Ub = solve(np.dot(Utw, s.basis), Utw)
-        np.savetxt(basis, Ub.T)
+        Ub = solve(numpy.dot(Utw, s.basis), Utw)
+        numpy.savetxt(basis, Ub.T)
 
-        invOP = np.dot(Ub, Ub.T)
-        np.savetxt(invOpFname, invOP)
+        invOP = numpy.dot(Ub, Ub.T)
+        numpy.savetxt(invOpFname, invOP)
+
+        positions_orig = U.atoms.positions.copy()
+        positions_pert = perturb(s.atoms, noise=2.0)
+        U.atoms.positions = positions_pert
+
+        # Write initial frame (perturbed structure)
+        write(W, U.atoms)
+
+        # Recover unperturbed atomic positions (for CG construction, etc.)
+        U.atoms.positions = positions_orig
 
         for ts in U.trajectory:
 
-                with open(cFname, 'w') as fp:
-                	np.savetxt(fp, s.atoms.positions)
+                with open(icFname, 'w') as fp:
+                	numpy.savetxt(fp, positions_pert)
 
-                CG = s.ComputeCG(s.atoms.positions)
+                CG = s.ComputeCG(U.atoms.positions)
                 nCG = len(CG)
 
-                np.savetxt(cgFname, CG)
+                numpy.savetxt(cgFname, CG)
 
-                args = f'-nc {natoms} -ns {ncons} -c {cFname} -i Indices.dat -l LengthEq.dat -cg {cgFname} ' +  \
-			f'-ncg {nCG} -ref {basis} -inv {invOpFname} -o {fname} -tol {tol} -PC_type jacobi'
+                args = f'-nc {natoms} -ns {ncons} -c {icFname} -i Indices.dat -l LengthEq.dat -cg {cgFname} ' +  \
+			f'-ncg {nCG} -ref {basis} -inv {invOpFname} -o {ocFname} -tol {tol} -PC_type jacobi'
 
                 os.system('mpirun -n 1 ../MSR.a ' + args)
 
-                pos = readCoords(fname, natoms)
+                pos = readCoords(ocFname, natoms)
                 U.atoms.positions = pos
 
-                W.write(ts)
+                write(W, U.atoms)
 
-		# clean up
                 os.system('rm {}'.format(cgFname))
-                os.system('rm {}'.format(cFname))
-                os.system('rm {}'.format(fname))
+                os.system('rm {}'.format(ocFname))
+                os.system('rm {}'.format(icFname))
 
                 if ts.frame > 100:
                         break
 
         W.close()
 
-	# input clean up
-        os.system('rm {}'.format(invOpFname))
-        os.system('rm {}'.format(basis))
-        os.system('rm Indices.dat')
-        os.system('rm LengthEq.dat')
-	os.system('rm error.dat')
+	# Clean up files if req
+        if clean:
+                os.system('rm {}'.format(invOpFname))
+                os.system('rm {}'.format(basis))
+                os.system('rm Indices.dat')
+                os.system('rm LengthEq.dat')
+                os.system('rm error.dat')

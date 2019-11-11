@@ -190,7 +190,7 @@ def poly_indexes(kmax):
 
     return np.array(indices,'i')
 
-def SpaceWarpingSubsystemFactory(system, selects, **args):
+def SpaceWarpingSubsystemFactory(system, **args):
     """
     create a list of LegendreSubsystems.
     @param system: the system that the subsystem belongs to, this may be None
@@ -206,6 +206,11 @@ def SpaceWarpingSubsystemFactory(system, selects, **args):
                  created for each residue.
     """
     kmax, freq = 0, 1000
+
+    if 'selects' not in args:
+        selects = ['all']
+    else:
+        selects = args['selects']
 
     try:
         kmax = args['kmax']
