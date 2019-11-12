@@ -6,6 +6,7 @@ Microstate sparse reconstruction (MSR) is an optimization algorithm that solves 
 
 [![DOI for Citing MSR](https://img.shields.io/badge/DOI-10.1021%2Facs.jctc.5b00056-blue.svg)](https://doi.org/10.1021/acs.jctc.6b00348)
 
+<p style="text-align:center;"><img src="data/imgs/recovery.png"></p>
 
 AUTHOR
 ======
