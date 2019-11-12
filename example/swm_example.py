@@ -45,12 +45,7 @@ if __name__ == '__main__':
         # Unperturbed structure
         U = md.Universe(pdb, guess_bonds=True)
 
-        args = {'kmax':2}
-        n, ss = SS.SpaceWarpingSubsystemFactory(U, **args)
-
-        s = ss[0]
-        s.universe_changed(U)
-        s.equilibrated()
+        ss = SS.SpaceWarpingSubsystem(U.atoms, kmax=2) 
 
         bonds = numpy.array(U.bonds.to_indices())
         angles = numpy.array(U.angles.to_indices())
@@ -76,15 +71,14 @@ if __name__ == '__main__':
 
         W = md.Writer('diAlanine.dcd', n_atoms=natoms)
 
-        Utw = s.basis.T * s.atoms.masses
-        Ub = solve(numpy.dot(Utw, s.basis), Utw)
-        numpy.savetxt(basis, Ub.T)
+        cgOP = ss.coarseGrainOP()
+        numpy.savetxt(basis, cgOP)
 
-        invOP = numpy.dot(Ub, Ub.T)
+        invOP = ss.fineGrainOP()
         numpy.savetxt(invOpFname, invOP)
 
         positions_orig = U.atoms.positions.copy()
-        positions_pert = perturb(s.atoms, noise=2.0)
+        positions_pert = perturb(U.atoms, noise=2.0)
         U.atoms.positions = positions_pert
 
         # Write initial frame (perturbed structure)
@@ -98,7 +92,7 @@ if __name__ == '__main__':
                 with open(icFname, 'w') as fp:
                 	numpy.savetxt(fp, positions_pert)
 
-                CG = s.ComputeCG(U.atoms.positions)
+                CG = ss.ComputeCG(U.atoms.positions)
                 nCG = len(CG)
 
                 numpy.savetxt(cgFname, CG)
