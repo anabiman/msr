@@ -19,8 +19,7 @@
  *
  */
 
-#include "Main.h"
-using namespace std;
+#include "main.h"
 
 /* This code does not run correctly in parallel. 
 TODO: Find the bug in parallel mode.
@@ -494,10 +493,10 @@ PetscErrorCode NewtonIter(std::vector<Vec>& Coords, std::vector<Vec>& Phi, Petsc
 
 				if(!rank) {
 
-					cout <<  "atom disp = " << atomicDisp << ", CG error = " << CGerror / 3.0 << " , FS error = " << FSerror / 3.0 << endl;
+					std::cout <<  "atom disp = " << atomicDisp << ", CG error = " << CGerror / 3.0 << " , FS error = " << FSerror / 3.0 << std::endl;
 	
-					ofstream myfile;
-					myfile.open ("error.dat", ios::app);
+					std::ofstream myfile;
+					myfile.open ("error.dat", std::ios::app);
   					myfile << CGerror / 3.0 << " ," << FSerror / 3.0 << " , " << Lagrangian << std::endl;
   					myfile.close();
 				}
