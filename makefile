@@ -10,14 +10,17 @@ DEP  = petsc_real
 INCL = /usr/lib/petscdir/3.10/include
 LIB = /usr/lib/petscdir/3.10/lib
 
-install: Main.o Solver.o
-	${LINKER} ${LFlags} Main.o Solver.o -l${DEP} -L${LIB} -o${EXEC}
+install: main.o solver.o inout.o
+	${LINKER} ${LFlags} main.o solver.o inout.o -l${DEP} -L${LIB} -o${EXEC}
 
-Main.o: src/Main.cpp
-	${CC} ${CFlags} src/Main.cpp -I${INCL}
+main.o: src/main.cpp
+	${CC} ${CFlags} src/main.cpp -I${INCL}
 
-Solver.o: src/Solver.cpp
-	${CC} ${CFlags} src/Solver.cpp -I${INCL}
+solver.o: src/solver.cpp
+	${CC} ${CFlags} src/solver.cpp -I${INCL}
 
-clean: src/Main.o src/Solver.o
-	${RM} src/Main.o src/Solver.o ${EXEC}
+inout.o: src/inout.cpp
+	${CC} ${CFlags} src/inout.cpp -I${INCL}
+
+clean: main.o solver.o inout.o
+	${RM} main.o solver.o inout.o ${EXEC}
