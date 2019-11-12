@@ -1,12 +1,13 @@
-MSR
-===
-Microstate sparse reconstruction (MSR) is an optimization algorithm that solves the inverse problem: recovering an all-atom state consistent with a coarse-grained description.
+Microstate Sparse Reconstruction
+================================
+Microstate sparse reconstruction (MSR) is a backmapping algorithm that recovers all-atom structures from coarse-grained/reduced variables. MSR uses topological information (connectivity) of a given macromolecule and methods from optimization and inverse theory to rapidly achieve this recovery.
 
-**Please consider citing the following paper if your find MSR useful in your research:**
+The schematic below shows how MSR can be used to reconstruct a physically meaningful structure of a strongly perturbed alanine dipeptide. 
+<p style="text-align:center;"><img src="data/imgs/recovery.png"></p>
+
+**Please consider citing the following paper if your find this code useful in your research:**
 
 [![DOI for Citing MSR](https://img.shields.io/badge/DOI-10.1021%2Facs.jctc.5b00056-blue.svg)](https://doi.org/10.1021/acs.jctc.6b00348)
-
-<p style="text-align:center;"><img src="data/imgs/recovery.png"></p>
 
 AUTHOR
 ======
