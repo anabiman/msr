@@ -97,8 +97,8 @@ if __name__ == '__main__':
 
                 numpy.savetxt(cgFname, CG)
 
-                args = f'-nc {natoms} -ns {ncons} -c {icFname} -i Indices.dat -l LengthEq.dat -cg {cgFname} ' +  \
-			f'-ncg {nCG} -ref {basis} -inv {invOpFname} -o {ocFname} -tol {tol} -PC_type jacobi'
+                args = f'--natoms {natoms} --ncons {ncons} --ref {icFname} --indices Indices.dat --lengths LengthEq.dat --cg {cgFname} ' +  \
+			f'--cgOP {basis} --fgOP {invOpFname} --out {ocFname} --tol {tol} -PC_type jacobi'
 
                 os.system('mpirun -n 1 ../MSR.a ' + args)
 
