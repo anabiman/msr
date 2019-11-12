@@ -24,20 +24,26 @@ Numpy - http://www.numpy.org
 
 OpenMPI - http://www.open-mpi.org or MPICH  - https://www.mpich.org
 
-USAGE
-=====
-`mpirun MSR.a -nc {int} -ns {int} -c {filename} -i {filename} -l {filename} -cg {filename} -ncg {int} -ref {filename} -inv {filename} -o {filename} -tol {float}`
+PYTHON COMMAND-LINE INTERFACE
+=============================
+* --top: input reference structure (topology) file (pdb, gro, ...) 
+* --cgOP: coarse-graining matrix file (table) or python code (module)
+* --fgOP: fine-graining (backmapping) matrix file (table) or python code (module)
+* [--out]: output filename of recovered all-atom structure 
+* [--tol]: tolerance set for the atomic displacement, below which convergence is assumed to be achieved, defaults to 0.1A
+* [--maxiter]: max number of iterations the solver performs before giving up, defaults to 100
 
-* nc: number of atoms
-* ns: number of constraints
-* c: path to input reference all-atom coordinates
-* i: path to input bond/angle indices
-* l: path to input bond/angle lengths
-* cg: path to input CG coordinates
-* ref: path to reference basis functions (matrix) file
-* inv: path to inverse operator (matrix) file
-* o: output filename of recovered all-atom positions
-* tol: tolerance of the iterative solver
+C++ COMMAND-LINE INTERFACE
+==========================
+
+* --ref: path to input reference all-atom coordinates
+* --indices: path to input bond/angle indices
+* --lengths: path to input bond/angle lengths
+* --cg: path to input CG coordinates
+* --cgOP: path to the coarse-graining operator (matrix) file
+* --fgOP: path to inverse (backmapping) operator (matrix) file
+* [--out]: output filename of recovered all-atom positions
+* [--tol]: tolerance of the iterative solver
 
 WORKING EXAMPLE
 ===============
