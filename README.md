@@ -5,7 +5,7 @@ Microstate sparse reconstruction (MSR) is a backmapping algorithm that recovers 
 The schematic below shows how MSR can be used to reconstruct a physically meaningful structure of a strongly perturbed alanine dipeptide. 
 <p style="text-align:center;"><img src="data/imgs/recovery.png"></p>
 
-AUTHOR
+Author
 ======
 Andrew Abi-Mansour
 Department of Chemistry, Indiana University, Bloomington
@@ -14,27 +14,26 @@ Department of Chemistry, Indiana University, Bloomington
 
 [![DOI for Citing MSR](https://img.shields.io/badge/DOI-10.1021%2Facs.jctc.5b00056-blue.svg)](https://doi.org/10.1021/acs.jctc.6b00348)
 
-PREREQUISITES
+Prerequisites
 =============
-PETSc - https://www.mcs.anl.gov/petsc
+The 2 core requirements are: 
+* PETSc - https://www.mcs.anl.gov/petsc
+* OpenMPI - http://www.open-mpi.org or MPICH  - https://www.mpich.org
 
-MDAnalysis - https://code.google.com/p/mdanalysis
+If you want to use the python API, you must install:
+* MDAnalysis - https://code.google.com/p/mdanalysis
+* Numpy - http://www.numpy.org
 
-Numpy - http://www.numpy.org
+Python API
+==========
+Run ```make python``` to compile MSR as a library with a python APR. 
+A sample script (swm_example.py) is provided in the examples directory on how to use the python API.
 
-OpenMPI - http://www.open-mpi.org or MPICH  - https://www.mpich.org
 
-PYTHON COMMAND-LINE INTERFACE
-=============================
-* --top: input reference structure (topology) file (pdb, gro, ...) 
-* --cgOP: coarse-graining matrix file (table) or python code (module)
-* --fgOP: fine-graining (backmapping) matrix file (table) or python code (module)
-* [--out]: output filename of recovered all-atom structure 
-* [--tol]: tolerance set for the atomic displacement, below which convergence is assumed to be achieved, defaults to 0.1A
-* [--maxiter]: max number of iterations the solver performs before giving up, defaults to 100
+C++ CLI
+========
 
-C++ COMMAND-LINE INTERFACE
-==========================
+If you prefer compiling MSR as an executable, simply run ```make`` to generate a static executable (MSR.a) with the following CLI:
 
 * --ref: path to input reference all-atom coordinates
 * --indices: path to input bond/angle indices
@@ -43,22 +42,9 @@ C++ COMMAND-LINE INTERFACE
 * --cgOP: path to the coarse-graining operator (matrix) file
 * --fgOP: path to inverse (backmapping) operator (matrix) file
 * [--out]: output filename of recovered all-atom positions
-* [--tol]: tolerance of the iterative solver
+* [--tol]: tolerance set for the atomic displacement, below which convergence is assumed to be achieved, defaults to 0.1A
+* [--maxiter]: max number of iterations the solver performs before giving up, defaults to 100
 
-WORKING EXAMPLE
-===============
-A sample script (swm_example.py) is provided in the examples directory. This script has the following signature:
-
-`python swm_example.py top tol`
-
-* top: topology file such as a pdb or gro file
-* tol: tolerance set for the atomic displacement, below which convergence is assumed to be achieved
-
-This script uses the space-warping method to coarse-grained an all-atom system perturbed by noise. MSR recovers a reasonable microstate in 20 iterations.
-To run this script, invoke:
-
-`swm_example.py ../data/systems/dialanine.pdb 1e-3`
-
-FEEDBACK
+Feedback
 ========
 Email me: andrew [at] gmail [dot] com
