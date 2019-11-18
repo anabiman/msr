@@ -142,7 +142,7 @@ PetscErrorCode writeVector(std::vector<Vec>& Coords, const char* fname) {
 
 #undef __FUNCT__
 #define __FUNCT__ "readInput"
-PetscBool readInput(char* coordFname, char* phiFname, char* indicesFname, char* eqLengthFname, char* refFname, char* invFname,
+PetscBool readInput(char* coordFname, char* phiFname, char* indicesFname, char* eqLengthFname, char* refFname,
 		    char* oFname, PetscInt& numCoords, PetscInt& numCons, PetscInt& numCG)
 {
 
@@ -154,7 +154,6 @@ PetscBool readInput(char* coordFname, char* phiFname, char* indicesFname, char* 
     PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "--indices", indicesFname, PETSC_MAX_PATH_LEN, &flg);
     PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "--lengths", eqLengthFname, PETSC_MAX_PATH_LEN, &flg);
     PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "--cgOP", refFname, PETSC_MAX_PATH_LEN, &flg);
-    PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "--fgOP", invFname, PETSC_MAX_PATH_LEN, &flg);
     PetscOptionsGetString(PETSC_NULL, PETSC_NULL, "--out", oFname, PETSC_MAX_PATH_LEN, &flg);
 
     numCoords = countLines(coordFname);
@@ -168,13 +167,12 @@ PetscBool readInput(char* coordFname, char* phiFname, char* indicesFname, char* 
 
 #undef __FUNCT__
 #define __FUNCT__ "cleanUp"
-PetscErrorCode cleanUp(Mat& Ref, Mat& invOP, Vec& EqLength, std::vector<Vec>& Coords, std::vector<Vec>& Phi ) {
+PetscErrorCode cleanUp(Mat& Ref, Vec& EqLength, std::vector<Vec>& Coords, std::vector<Vec>& Phi ) {
 
     PetscFunctionBegin;
     PetscErrorCode ierr;
 
     ierr = MatDestroy(&Ref); CHKERRQ(ierr);
-    ierr = MatDestroy(&invOP); CHKERRQ(ierr);
     ierr = VecDestroy(&EqLength); CHKERRQ(ierr);
 
     for(auto it = Coords.begin(); it != Coords.end(); it++) {

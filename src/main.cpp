@@ -39,15 +39,10 @@ int main(int argc, char** argv) {
        eqLengthFname[PETSC_MAX_PATH_LEN],
        oFname[PETSC_MAX_PATH_LEN],
        refFname[PETSC_MAX_PATH_LEN],
-       phiFname[PETSC_MAX_PATH_LEN],
-       invFname[PETSC_MAX_PATH_LEN];
+       phiFname[PETSC_MAX_PATH_LEN];
 
-  PetscBool flg = readInput(coordFname, phiFname, indicesFname, eqLengthFname, refFname, invFname, oFname, numCoords, numCons, numCG);
+  PetscBool flg = readInput(coordFname, phiFname, indicesFname, eqLengthFname, refFname, oFname, numCoords, numCons, numCG);
   PetscOptionsGetReal(PETSC_NULL, PETSC_NULL, "--tol", &tol, &flg);
-
-  std::cout << "Natoms = " << numCoords << std::endl;
-  std::cout << "Ncons = " << numCons << std::endl;
-  std::cout << "NumCG = " << numCG << std::endl;
 
   // mpi params
   PetscInt numProcs, rank;
@@ -55,7 +50,7 @@ int main(int argc, char** argv) {
   MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 
   Vec CoordsX, CoordsY, CoordsZ, PhiX, PhiY, PhiZ;
-  Mat Ref, invOP;
+  Mat Ref;
   Vec EqLength;
 
   PetscScalar X, Y, Z;
@@ -76,7 +71,6 @@ int main(int argc, char** argv) {
 
     if (flg) {
           	readMatrixASCII(Ref, refFname, numCoords, numCG, "%le");
-		readMatrixASCII(invOP, invFname, numCG, numCG, "%le");
           	readVectorASCII(EqLength, eqLengthFname, numCons,"%le");
 
 		PetscInt istart, iend;
@@ -151,14 +145,14 @@ int main(int argc, char** argv) {
      /****** Begin Computation ~ Phew! *****/
     /**************************************/
 
-    NewtonIter(Coords, Phi, indicesOne, indicesTwo, EqLength, Ref, invOP, oFname, tol);
+    NewtonIter(Coords, Phi, indicesOne, indicesTwo, EqLength, Ref, oFname, tol);
     writeVector(Coords, oFname);
 
       /**************************************************/
      /****** End Computation ~ Garbage collection *****/
     /*************************************************/
 
-    cleanUp(Ref, invOP, EqLength, Coords, Phi);
+    cleanUp(Ref, EqLength, Coords, Phi);
 
     PetscFinalize();
     return 0;

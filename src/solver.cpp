@@ -285,7 +285,7 @@ PetscErrorCode WriteMatrixToFile(Mat& Matrix, const char* ofname) {
 #undef __FUNCT__
 #define __FUNCT__ "NewtonIter"
 PetscErrorCode NewtonIter(std::vector<Vec>& Coords, std::vector<Vec>& Phi, PetscInt* indicesOne, PetscInt* indicesTwo, Vec& EqLength, Mat& Ref, 
-			  Mat& RefTransRef, char* oFname, PetscReal tol) {
+			  char* oFname, PetscReal tol) {
      /*
         ** Description **
 	This is the main computational engine that solves the equations
@@ -398,7 +398,14 @@ PetscErrorCode NewtonIter(std::vector<Vec>& Coords, std::vector<Vec>& Phi, Petsc
 	PetscScalar atomicDisp = tol;
 
 	PetscScalar FSerror, CGerror, Lagrangian;
-	
+
+	// Construct QQ^t operator
+	Mat RefTransRef;
+	ierr = MatCreate(PETSC_COMM_WORLD, &RefTransRef); CHKERRQ(ierr);
+        ierr = MatSetSizes(RefTransRef, PETSC_DECIDE, PETSC_DECIDE, NumCG, NumCG); CHKERRQ(ierr);
+        ierr = MatSetType(RefTransRef, MATMPIAIJ); CHKERRQ(ierr);
+	ierr = MatTransposeMatMult(Ref, Ref, MAT_INITIAL_MATRIX, PETSC_DEFAULT, &RefTransRef); CHKERRQ(ierr);
+
 	try {
 	 	while(atomicDisp >= tol) {
 
@@ -527,6 +534,7 @@ PetscErrorCode NewtonIter(std::vector<Vec>& Coords, std::vector<Vec>& Phi, Petsc
 
 	ierr = MatDestroy(&AdjacencyTrans); CHKERRQ(ierr);
 	ierr = MatDestroy(&Adjacency); CHKERRQ(ierr);
+	ierr = MatDestroy(&RefTransRef); CHKERRQ(ierr);	
 
  	ierr = VecDestroy(&Constraints); CHKERRQ(ierr);
 	ierr = VecDestroy(&dr); CHKERRQ(ierr);

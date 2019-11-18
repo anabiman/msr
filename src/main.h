@@ -31,13 +31,13 @@
 #include <algorithm>
 #include <cassert>
 
-PetscErrorCode NewtonIter(std::vector<Vec>&, std::vector<Vec>&, PetscInt*, PetscInt*, Vec&, Mat&, Mat&, char*, PetscReal);
+PetscErrorCode NewtonIter(std::vector<Vec>&, std::vector<Vec>&, PetscInt*, PetscInt*, Vec&, Mat&, char*, PetscReal);
 PetscErrorCode writeVector(std::vector<Vec>& Coords, const char* fname);
 PetscErrorCode readVectorASCII(Vec& Vector, char* fname, const PetscInt nrows, const char* type);
 PetscErrorCode readMatrixASCII(Mat& Matrix, char* fname, const PetscInt nrows, const PetscInt ncols, const char* type);
 PetscErrorCode writeVector(std::vector<Vec>& Coords, const char* fname);
-PetscErrorCode cleanUp(Mat&, Mat&, Vec&, std::vector<Vec>&, std::vector<Vec>&);
-PetscBool readInput(char*, char*, char*, char*, char*, char*, char*, PetscInt&, PetscInt&, PetscInt&);
+PetscErrorCode cleanUp(Mat&, Vec&, std::vector<Vec>&, std::vector<Vec>&);
+PetscBool readInput(char*, char*, char*, char*, char*, char*, PetscInt&, PetscInt&, PetscInt&);
 int countLines(std::string filename);
 
 #define MAX_ITERS 100

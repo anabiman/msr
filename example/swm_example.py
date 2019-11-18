@@ -67,15 +67,11 @@ if __name__ == '__main__':
         cgFname = 'CG.dat'
         basis = 'basis.dat'
         icFname = 'input_coords_ref.dat'
-        invOpFname = 'invOP.dat'
 
         W = md.Writer('diAlanine.dcd', n_atoms=natoms)
 
         cgOP = ss.coarseGrainOP()
         numpy.savetxt(basis, cgOP)
-
-        invOP = ss.fineGrainOP()
-        numpy.savetxt(invOpFname, invOP)
 
         positions_orig = U.atoms.positions.copy()
         positions_pert = perturb(U.atoms, noise=2.0)
@@ -98,9 +94,9 @@ if __name__ == '__main__':
                 numpy.savetxt(cgFname, CG)
 
                 args = f'--natoms {natoms} --ncons {ncons} --ref {icFname} --indices Indices.dat --lengths LengthEq.dat --cg {cgFname} ' +  \
-			f'--cgOP {basis} --fgOP {invOpFname} --out {ocFname} --tol {tol} -PC_type jacobi'
+			f'--cgOP {basis} --out {ocFname} --tol {tol} -PC_type jacobi'
 
-                os.system('mpirun -n 1 ../MSR.a ' + args)
+                os.system('mpirun -n 1 ../msr.a ' + args)
 
                 pos = readCoords(ocFname, natoms)
                 U.atoms.positions = pos
@@ -118,7 +114,6 @@ if __name__ == '__main__':
 
 	# Clean up files if req
         if clean:
-                os.system('rm {}'.format(invOpFname))
                 os.system('rm {}'.format(basis))
                 os.system('rm Indices.dat')
                 os.system('rm LengthEq.dat')
