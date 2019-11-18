@@ -39,8 +39,7 @@ If you prefer compiling MSR as an executable, simply run ```make`` to generate a
 * --indices: path to input bond/angle indices
 * --lengths: path to input bond/angle lengths
 * --cg: path to input CG coordinates
-* --cgOP: path to the coarse-graining operator (matrix) file
-* --fgOP: path to inverse (backmapping) operator (matrix) file
+* --cgOP: path to the coarse-graining operator (matrix of size natoms x ncg) file
 * [--out]: output filename of recovered all-atom positions
 * [--tol]: tolerance set for the atomic displacement, below which convergence is assumed to be achieved, defaults to 0.1A
 * [--maxiter]: max number of iterations the solver performs before giving up, defaults to 100
