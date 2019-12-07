@@ -33,7 +33,7 @@ A sample script (swm_example.py) is provided in the examples directory on how to
 C++ CLI
 ========
 
-If you prefer compiling MSR as an executable, simply run ```make`` to generate a static executable (MSR.a) with the following CLI:
+If you prefer compiling MSR as an executable, simply run ```make``` to generate a static executable (MSR.a) with the following CLI:
 
 * --ref: path to input reference all-atom coordinates
 * --indices: path to input bond/angle indices
