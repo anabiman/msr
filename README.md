@@ -1,13 +1,13 @@
 Microstate Sparse Reconstruction
 ================================
-Microstate sparse reconstruction (MSR) is a backmapping algorithm that recovers all-atom structures from coarse-grained/reduced variables. MSR uses topological information (connectivity) of a given macromolecule and methods from optimization and inverse theory to rapidly achieve this recovery.
+Microstate sparse reconstruction (MSR) is a backmapping algorithm that recovers all-atom structures from coarse-grained/reduced variables. MSR uses topological information (connectivity) of a given macromolecule and methods from optimization and inverse theory to rapidly achieve this recovery. The method has also been shown to scale well for much larger systems such as an assembly of proteins.
 
 The schematic below shows how MSR can be used to reconstruct a physically meaningful structure of a strongly perturbed alanine dipeptide. 
 <p style="text-align:center;"><img src="data/imgs/recovery.png"></p>
 
-Author
-======
-Andrew Abi-Mansour
+Authors
+=======
+Andrew Abi-Mansour and Peter Ortoleva
 Department of Chemistry, Indiana University, Bloomington
 
 **Please consider citing the following paper if your find this code useful in your research:**
@@ -26,7 +26,7 @@ If you want to use the python API, you must install:
 
 Python API
 ==========
-Run ```make python``` to compile MSR as a library with a python APR. 
+Run ```make python``` to compile MSR as a library with a python API. 
 A sample script (swm_example.py) is provided in the examples directory on how to use the python API.
 
 
