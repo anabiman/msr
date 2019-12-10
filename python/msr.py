@@ -96,9 +96,9 @@ except __builtin__.Exception:
     _newclass = 0
 
 
-def foo(a):
-    return _msr.foo(a)
-foo = _msr.foo
+def reconstruct(COORDS_IN, CG_IN, INDICES, LENGTHS, CGOP, COORDS_OUT):
+    """Computes an all-arom state: reconstruct(coords, CG, indices, lengths, CGOP) -> coords"""
+    return _msr.reconstruct(COORDS_IN, CG_IN, INDICES, LENGTHS, CGOP, COORDS_OUT)
 # This file is compatible with both classic and new-style classes.
 
 
